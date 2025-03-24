@@ -41,6 +41,7 @@ import {
   Home,
   Building,
   DollarSign,
+  X,
 } from "lucide-react";
 
 export interface AdvancedUserSettingsProps {
