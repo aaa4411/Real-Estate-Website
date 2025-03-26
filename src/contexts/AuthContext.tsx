@@ -3,6 +3,8 @@ import { Session, User, AuthError } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
 import { toast } from "@/components/ui/use-toast";
 
+type UserRole = "user" | "admin" | "moderator";
+
 type AuthContextType = {
   session: Session | null;
   user: User | null;
@@ -32,6 +34,8 @@ type AuthContextType = {
   }>;
   loading: boolean;
   isAuthenticated: boolean;
+  isAdmin: boolean;
+  userRole: UserRole | null;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -44,8 +48,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Mock user for development when Supabase is not configured
   const mockUser = {
     id: "mock-user-id",
-    email: "user@example.com",
-    user_metadata: { name: "Demo User" },
+    email: "admin@example.com",
+    user_metadata: {
+      name: "Admin User",
+      role: "admin",
+    },
   };
 
   const isUsingMock = () => {
@@ -304,6 +311,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  // Check if user has admin role
+  const getUserRole = (): UserRole | null => {
+    if (!user) return null;
+    return (user.user_metadata?.role as UserRole) || "user";
+  };
+
+  const isAdmin = getUserRole() === "admin";
+  const userRole = getUserRole();
+
   const value = {
     session,
     user,
@@ -314,6 +330,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     updateProfile,
     loading,
     isAuthenticated: !!user,
+    isAdmin,
+    userRole,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

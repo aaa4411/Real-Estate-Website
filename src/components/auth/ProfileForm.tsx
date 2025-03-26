@@ -14,9 +14,10 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User, Mail, Loader2 } from "lucide-react";
+import { AdminBadge } from "@/components/ui/admin-badge";
 
 export default function ProfileForm() {
-  const { user, updateProfile } = useAuth();
+  const { user, updateProfile, isAdmin } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -74,7 +75,12 @@ export default function ProfileForm() {
             </AvatarFallback>
           </Avatar>
           <div>
-            <CardTitle className="text-2xl">{name || "Your Profile"}</CardTitle>
+            <div className="flex items-center gap-2 mb-1">
+              <CardTitle className="text-2xl">
+                {name || "Your Profile"}
+              </CardTitle>
+              {isAdmin && <AdminBadge />}
+            </div>
             <CardDescription>{email}</CardDescription>
           </div>
         </div>

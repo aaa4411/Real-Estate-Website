@@ -9,13 +9,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { User, LogOut, Heart, Settings } from "lucide-react";
+import { User, LogOut, Heart, Settings, Shield } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { AdminBadge } from "@/components/ui/admin-badge";
 
 export default function UserMenu() {
-  // Mock authentication state for now to avoid the dispatcher error
-  const isAuthenticated = false;
-  const user = null;
-  const signOut = async () => {};
+  const { isAuthenticated, user, signOut, isAdmin } = useAuth();
 
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -66,7 +65,12 @@ export default function UserMenu() {
       <DropdownMenuContent align="end" className="w-56">
         <div className="flex items-center justify-start gap-2 p-2">
           <div className="flex flex-col space-y-1 leading-none">
-            <p className="font-medium">{user?.email}</p>
+            <div className="flex items-center gap-2">
+              <p className="font-medium">
+                {user?.user_metadata?.name || user?.email}
+              </p>
+              {isAdmin && <AdminBadge size="sm" />}
+            </div>
             <p className="w-[200px] truncate text-sm text-muted-foreground">
               {user?.email}
             </p>
@@ -100,6 +104,17 @@ export default function UserMenu() {
             Settings
           </Link>
         </DropdownMenuItem>
+        {isAdmin && (
+          <DropdownMenuItem asChild>
+            <Link
+              to="/admin"
+              className="cursor-pointer flex w-full items-center"
+            >
+              <Shield className="mr-2 h-4 w-4" />
+              Admin Dashboard
+            </Link>
+          </DropdownMenuItem>
+        )}
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={handleSignOut}
